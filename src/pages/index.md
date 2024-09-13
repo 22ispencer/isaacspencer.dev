@@ -1,5 +1,5 @@
 ---
-layout: ../Layouts/ArticleLayout.astro
+layout: ../layouts/ArticleLayout.astro
 title: Home
 ---
 
