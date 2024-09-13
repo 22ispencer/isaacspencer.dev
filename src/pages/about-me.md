@@ -31,10 +31,10 @@ fully integrated server-based website.
 In my personal time I have worked on learning different web frameworks, first
 starting with Vue, then Svelte, then React. These each gave me an understanding
 of how the web is designed and the pros and cons of each framework. My current
-favorite stack is called the [AHA Stack](ahastack.dev). This is a mixture of
-Astro for the server as well as HTMX for simple hypermedia-based interaction,
-and finally Alpine.js for client side JavaScript without writing much
-JavaScript. Astro is the server-side framework running this very website.
+favorite stack is called the [AHA Stack](https://ahastack.dev). This is a
+mixture of Astro for the server as well as HTMX for simple hypermedia-based
+interaction, and finally Alpine.js for client side JavaScript without writing
+much JavaScript. Astro is the server-side framework running this very website.
 
 I have also experimented with creating my own web server, primarily in Go. This
 was a fun experience for me. Unfortunately I found it tedious to have to manage
