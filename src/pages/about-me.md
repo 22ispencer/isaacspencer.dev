@@ -3,13 +3,6 @@ layout: ../layouts/ArticleLayout.astro
 title: About Me
 ---
 
-<!--toc:start-->
-
-- [Skills](#skills)
-  - [CAD](#cad)
-  - [Programming](#programming)
-  <!--toc:end-->
-
 <h1 class="mb-0">Isaac Spencer</h1>
 
 **_Aerospace Engineer & Software Developer_**
