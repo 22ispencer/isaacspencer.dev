@@ -7,4 +7,5 @@ import tailwind from "@astrojs/tailwind";
 export default defineConfig({
   site: "https://isaacspencer.dev",
   integrations: [tailwind()],
+  output: "static",
 });
