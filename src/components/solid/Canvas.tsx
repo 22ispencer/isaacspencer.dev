@@ -14,15 +14,23 @@ export function Canvas(props: { style?: string; class?: string }) {
     ctx.scale(dpr, dpr);
   }
 
+  let translation!: DOMMatrix;
+
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.beginPath();
     ctx.lineWidth = 2;
     ctx.strokeStyle = "white";
-    ctx.moveTo(bottom.x, bottom.y);
-    ctx.lineTo(top.x, top.y);
-    ctx.moveTo(left.x, left.y);
-    ctx.lineTo(right.x, right.y);
+    const points = [
+      new DOMPoint(0, 5),
+      new DOMPoint(0, -5),
+      new DOMPoint(-5, 0),
+      new DOMPoint(5, 0),
+    ];
+    for (const point of points) {
+      const translated = translation.transformPoint(point);
+      ctx.lineTo(translated.x, translated.y);
+    }
     ctx.stroke();
   }
 
@@ -58,6 +66,8 @@ export function Canvas(props: { style?: string; class?: string }) {
     e.preventDefault();
     e.stopPropagation();
 
+    translation = translation.translate(e.movementX / translation.a, e.movementY / translation.a);
+
     draw();
   }
 
@@ -65,12 +75,24 @@ export function Canvas(props: { style?: string; class?: string }) {
     e.preventDefault();
     e.stopPropagation();
 
+    const reverseTranslation = translation.inverse();
+    const offset = reverseTranslation.transformPoint(
+      new DOMPoint(e.offsetX, e.offsetY),
+    );
+
+    const magnitude = e.deltaY > 0 ? 10 / 9 : 9 / 10;
+
+    translation = translation
+      .translate(offset.x, offset.y)
+      .scale3d(magnitude)
+      .translate(-offset.x, -offset.y);
+
     draw();
   }
 
   onMount(() => {
     setupCanvas();
-    getCanvasOffset();
+    translation = new DOMMatrix();
     draw();
     console.log("setup canvas!");
   });
