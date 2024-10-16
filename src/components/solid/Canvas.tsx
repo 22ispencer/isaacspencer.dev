@@ -1,76 +1,79 @@
 import { onMount } from "solid-js";
-function Canvas() {
+
+export function Canvas(props: { style?: string; class?: string }) {
   let canvas!: HTMLCanvasElement;
   let ctx!: CanvasRenderingContext2D;
 
-  function setupCanvas(canvas: HTMLCanvasElement) {
+  function setupCanvas() {
     const dpr = window.devicePixelRatio;
     const rect = canvas.getBoundingClientRect();
+    console.log(rect, dpr);
     canvas.width = rect.width * dpr;
     canvas.height = rect.height * dpr;
     ctx = canvas.getContext("2d")!;
     ctx.scale(dpr, dpr);
   }
 
-  let canvasOffsetX: number;
-  let canvasOffsetY: number;
-  function reOffset() {
-    const boundingBox = canvas.getBoundingClientRect();
-    canvasOffsetX = boundingBox.left;
-    canvasOffsetY = boundingBox.top;
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.beginPath();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "white";
+    ctx.moveTo(bottom.x, bottom.y);
+    ctx.lineTo(top.x, top.y);
+    ctx.moveTo(left.x, left.y);
+    ctx.lineTo(right.x, right.y);
+    ctx.stroke();
   }
-  reOffset();
-  window.onscroll = (_) => {
-    reOffset();
-  };
-  window.onresize = (_) => {
-    reOffset();
-  };
 
-  let isDown = false;
-  let startX: number, startY: number;
+  let isMouseDown = false;
+  let startPoint = { x: 0, y: 0 };
 
   function handleMouseDown(e: MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
 
-    startX = e.clientX - canvasOffsetX;
-    startY = e.clientY - canvasOffsetY;
-
-    isDown = true;
+    isMouseDown = true;
+    console.log("mouse down");
   }
 
   function handleMouseUp(e: MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
 
-    isDown = false;
+    isMouseDown = false;
+    console.log("mouse up");
   }
 
   function handleMouseOut(e: MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
 
-    isDown = false;
+    isMouseDown = false;
+    console.log("mouse up");
   }
 
   function handleMouseMove(e: MouseEvent) {
-    if (!isDown) return;
-
+    if (!isMouseDown) return;
     e.preventDefault();
     e.stopPropagation();
 
-    const mouseX = e.clientX - canvasOffsetX;
-    const mouseY = e.clientY - canvasOffsetY;
-
-    const dx = mouseX - startX;
-    const dy = mouseY - startY;
-
-    startX = mouseX;
-    startY = mouseY;
+    draw();
   }
 
-  onMount(() => { });
+  function handleWheel(e: WheelEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    draw();
+  }
+
+  onMount(() => {
+    setupCanvas();
+    getCanvasOffset();
+    draw();
+    console.log("setup canvas!");
+  });
   return (
     <canvas
       ref={canvas}
@@ -78,6 +81,9 @@ function Canvas() {
       on:mousemove={handleMouseMove}
       on:mouseup={handleMouseUp}
       on:mouseout={handleMouseOut}
+      on:wheel={handleWheel}
+      style={props.style}
+      class={props.class}
     ></canvas>
   );
 }
