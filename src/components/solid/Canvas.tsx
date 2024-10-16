@@ -15,60 +15,58 @@ export function Canvas(props: { style?: string; class?: string }) {
   }
 
   let translation!: DOMMatrix;
+  const transformPointInvertedY = (p: DOMPoint) =>
+    translation.scale(1, -1).transformPoint(p);
+
+  let truss!: {
+    points: DOMPoint[];
+    members: [number, number][];
+  };
 
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.beginPath();
     ctx.lineWidth = 2;
     ctx.strokeStyle = "white";
-    const points = [
-      new DOMPoint(0, 5),
-      new DOMPoint(0, -5),
-      new DOMPoint(-5, 0),
-      new DOMPoint(5, 0),
-    ];
-    for (const point of points) {
-      const translated = translation.transformPoint(point);
-      ctx.lineTo(translated.x, translated.y);
+
+    for (const member of truss.members) {
+      const start = transformPointInvertedY(truss.points[member[0]]);
+      const end = transformPointInvertedY(truss.points[member[1]]);
+      ctx.moveTo(start.x, start.y);
+      ctx.lineTo(end.x, end.y);
     }
     ctx.stroke();
-  }
 
-  let isMouseDown = false;
-  let startPoint = { x: 0, y: 0 };
-
-  function handleMouseDown(e: MouseEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-
-    isMouseDown = true;
-    console.log("mouse down");
-  }
-
-  function handleMouseUp(e: MouseEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-
-    isMouseDown = false;
-    console.log("mouse up");
-  }
-
-  function handleMouseOut(e: MouseEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-
-    isMouseDown = false;
-    console.log("mouse up");
+    ctx.fillStyle = "red";
+    for (const point of truss.points) {
+      const translated = transformPointInvertedY(point);
+      ctx.beginPath();
+      ctx.arc(translated.x, translated.y, 5, 0, 2 * Math.PI);
+      ctx.fill();
+    }
   }
 
   function handleMouseMove(e: MouseEvent) {
-    if (!isMouseDown) return;
     e.preventDefault();
     e.stopPropagation();
 
-    translation = translation.translate(e.movementX / translation.a, e.movementY / translation.a);
+    if (e.buttons & 4) {
+      const inverse = translation.inverse();
 
-    draw();
+      const moveStart = inverse.transformPoint(
+        new DOMPoint(e.offsetX - e.movementX, e.offsetY - e.movementY),
+      );
+      const moveEnd = inverse.transformPoint(
+        new DOMPoint(e.offsetX, e.offsetY),
+      );
+
+      translation = translation.translate(
+        moveEnd.x - moveStart.x,
+        moveEnd.y - moveStart.y,
+      );
+
+      draw();
+    }
   }
 
   function handleWheel(e: WheelEvent) {
@@ -80,7 +78,7 @@ export function Canvas(props: { style?: string; class?: string }) {
       new DOMPoint(e.offsetX, e.offsetY),
     );
 
-    const magnitude = e.deltaY > 0 ? 10 / 9 : 9 / 10;
+    const magnitude = -e.deltaY > 0 ? 10 / 9 : 9 / 10;
 
     translation = translation
       .translate(offset.x, offset.y)
@@ -92,18 +90,38 @@ export function Canvas(props: { style?: string; class?: string }) {
 
   onMount(() => {
     setupCanvas();
-    translation = new DOMMatrix();
+    translation = new DOMMatrix().scale3d(500).translate(0.9, 1.4);
+    translation = translation;
+    truss = {
+      points: [
+        new DOMPoint(0, 0),
+        new DOMPoint(1, 0),
+        new DOMPoint(2, 0),
+        new DOMPoint(0.5, Math.sqrt(3) / 2),
+        new DOMPoint(1.5, Math.sqrt(3) / 2),
+      ],
+      members: [
+        [0, 1],
+        [0, 3],
+        [1, 2],
+        [1, 3],
+        [1, 4],
+        [2, 4],
+        [3, 4],
+      ],
+    };
     draw();
     console.log("setup canvas!");
   });
   return (
     <canvas
       ref={canvas}
-      on:mousedown={handleMouseDown}
       on:mousemove={handleMouseMove}
-      on:mouseup={handleMouseUp}
-      on:mouseout={handleMouseOut}
       on:wheel={handleWheel}
+      on:contextmenu={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      }}
       style={props.style}
       class={props.class}
     ></canvas>
