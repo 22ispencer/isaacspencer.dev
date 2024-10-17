@@ -50,7 +50,7 @@ export function Canvas(props: { style?: string; class?: string }) {
     e.preventDefault();
     e.stopPropagation();
 
-    if (e.buttons & 4) {
+    if (e.buttons & 1) {
       const inverse = translation.inverse();
 
       const moveStart = inverse.transformPoint(
@@ -78,7 +78,7 @@ export function Canvas(props: { style?: string; class?: string }) {
       new DOMPoint(e.offsetX, e.offsetY),
     );
 
-    const magnitude = -e.deltaY > 0 ? 10 / 9 : 9 / 10;
+    const magnitude = 1 - e.deltaY * 0.0025;
 
     translation = translation
       .translate(offset.x, offset.y)
