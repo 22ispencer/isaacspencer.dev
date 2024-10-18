@@ -1,0 +1,10 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { TrussCanvas } from "@components/TrussCanvas.tsx";
+---
+
+<BaseLayout title="Truss Calculator">
+  <div class="h-screen w-screen">
+    <TrussCanvas client:load />
+  </div>
+</BaseLayout>
