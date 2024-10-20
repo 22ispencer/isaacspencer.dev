@@ -1,10 +1,11 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type PropsWithChildren } from "react";
 import { Matrix4, Mesh, Quaternion, Vector3 } from "three";
 import { Canvas } from "@react-three/fiber";
 import {
   CameraControls,
   Cylinder,
   OrthographicCamera,
+  PerspectiveCamera,
   Sphere,
 } from "@react-three/drei";
 
@@ -31,22 +32,31 @@ export function TrussCanvas() {
 
   return (
     <Canvas>
-      <OrthographicCamera makeDefault position={[0, 0, 10]} />
+      <hemisphereLight args={["#FFFFFF", "#000000", 0.9]} />
+      <OrthographicCamera makeDefault zoom={100} position={[0, 0, 5]} />
+
       <CameraControls />
       {nodes.map((node) => (
-        <Sphere position={node} args={[0.05]} />
+        <Sphere position={node} args={[0.05]}>
+          <meshPhongMaterial color="red" />
+        </Sphere>
       ))}
       {connections.map((c) => (
-        <Member point1={nodes[c[0]]} point2={nodes[c[1]]} />
+        <Member point1={nodes[c[0]]} point2={nodes[c[1]]}>
+          <meshPhongMaterial color="white" />
+        </Member>
       ))}
       <ambientLight intensity={0.1} />
-      <directionalLight position={[0, 0, 5]} color="red" />
     </Canvas>
   );
 }
 
 const k = new Vector3(0, 0, 1);
-function Member({ point1, point2 }: { point1: Vector3; point2: Vector3 }) {
+function Member({
+  children,
+  point1,
+  point2,
+}: PropsWithChildren<{ point1: Vector3; point2: Vector3 }>) {
   const radius = 0.02;
   const mesh = useRef<Mesh>(null);
   const length = point1.distanceTo(point2);
@@ -64,6 +74,8 @@ function Member({ point1, point2 }: { point1: Vector3; point2: Vector3 }) {
     // mesh.current.rotateOnWorldAxis(mesh.current.up, Math.PI / 2);
   }, []);
   return (
-    <Cylinder ref={mesh} args={[radius, radius, length]} position={midPoint} />
+    <Cylinder ref={mesh} args={[radius, radius, length]} position={midPoint}>
+      {children}
+    </Cylinder>
   );
 }
