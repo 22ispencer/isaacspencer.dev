@@ -16,8 +16,19 @@ I'm pursuing a degree in Aerospace Engineering with a minor in Computer Science.
 
 I am used to using CATIA & 3D Experience for 3D modeling. I have completed my
 college's course in the field, and have done work for my internship designing
-and modeling different parts and assemblies. I have recently began learning more
-advanced surface modeling, however I'm still new to this.
+and modeling different parts and assemblies. I have moderate experience creating
+complex shapes in CATIA using the generative shape design workbench.
+
+### FEM/FEA
+
+This semester (Spring 2025) I began my Aerospace Structures II class. In this
+class we've been exploring the finite element model (and analysis). This has
+been really fun for me because it has bridged the gap between the engineering
+classes I've taken and my interest in computer-science topics. We have been
+learning the fundamentals of how finite element analysis produces solutions, as
+well as learning how to use comercial FEA software (MSC Patran/Nastran & Femap).
+Both of these have been really fun for me, and I am excited to learn more about
+this is applied in the workforce.
 
 ### Programming
 
